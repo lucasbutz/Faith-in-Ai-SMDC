@@ -1,4 +1,4 @@
-#!/Users/lucasbuchli/Desktop/SMDC/.venv/bin/python3
+#!/Users/lucasbuchli/Desktop/SMDC/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
