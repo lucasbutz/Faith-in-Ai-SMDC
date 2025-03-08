@@ -1,14 +1,13 @@
 #Meta App ID: 3814003358929786
-
 #import requests
-
 # ACCESS_TOKEN = "EAA2M0Nthk3oBO3PingP1UMZBLhgclWf9yBWl4iVcBPQnX3fcxQMWiTyFlEqGHsobCg3pVCOitQ5UYdRZAHtZBjqDZBSf3K91GFwA4H0wPd8KPtRxpb2IlCfvPsJYDbcTm7dUaEaZCOjndf5ztz2VkVamtRs1ZBUYHZBb2UHyyZBUN9I9O0hZAZBJ4cXEzcXU08bvbBVWt41pErm1Blsk5rJflVZB8dPN6Bmc0vfDzKy0OyS87eZBZAaPQ6AGkUNqczf5612i3RFCcmAZDZD"
 
 
 ## Reddit API
 import praw
+import csv
 #import json
-from pprint import pprint
+#from pprint import pprint
 
 
 def test_reddit_connection():
@@ -24,23 +23,44 @@ def test_reddit_connection():
     )
     
     print("Successfully authenticated!")
-    # Search for posts about Dogs
+    # Search for posts about AI Jesus
 
-    print("Fetching 5 posts about Dogs...")
-    dog_posts = reddit.subreddit("all").search("planes", limit=5)    
+    print("Fetching 5 posts about AI Jesus...")
+    dog_posts = reddit.subreddit("all").search("AI Jesus", limit=5)    
 
+    posts_data = []
+    for posts in dog_posts:
+        posts_data.append({
+        'title': posts.title,
+        'score': posts.score,
+        'id': posts.id,
+        'url': posts.url,
+        'num_comments': posts.num_comments,
+        'created': posts.created_utc,
+        'body': posts.selftext
 
-    # Print post details
-    print("\n--- 5 Posts About Dogs ---")
-    for i, post in enumerate(dog_posts, 1):
-        print(f"\nPost {i}:")
-        print(f"Title: {post.title}")
-        print(f"Subreddit: r/{post.subreddit.display_name}")
-        print(f"Score: {post.score}")
-        print(f"URL: https://reddit.com{post.permalink}")
+        })
+        
+        return posts_data
+    
+    # # Print post details
+    # print("\n--- 5 Posts About AI Jesus ---")
+    # for i, post in enumerate(dog_posts, 1):
+    #     print(f"\nPost {i}:")
+    #     print(f"Title: {post.title}")
+    #     print(f"Subreddit: r/{post.subreddit.display_name}")
+    #     print(f"Score: {post.score}")
+    #     print(f"URL: https://reddit.com{post.permalink}")
 
-    print("\nAPI test completed successfully!")
+    # print("\nAPI test completed successfully!")
 
 if __name__ == "__main__":
-    test_reddit_connection()
+    posts = test_reddit_connection()
+    
+    # Save to CSV
+    with open('reddit_ai_jesus.csv', mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=posts[0].keys())
+        writer.writeheader()
+        writer.writerows(posts)
+
 
