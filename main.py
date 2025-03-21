@@ -10,38 +10,49 @@ import csv
 #from pprint import pprint
 
 
-def test_reddit_connection():
-    print("Connecting to Reddit API...")
-    
-    # Initialize the Reddit instance with your credentials
-    reddit = praw.Reddit(
+reddit = praw.Reddit(
         client_id="gY3V4lnTMRgiXXD8P24arA",
         client_secret="w6wPh1jbJhKl8V21DTxAnLtsHvs9Ew",
         password="Pollution@3",
         user_agent="script:dog_post_collector:v1.0 (by /u/CryptographerOne6528)",
         username="CryptographerOne6528",
     )
+
+def searchAIJesus(red):
+    print("Connecting to Reddit API...")
     
+    # Initialize the Reddit instance with your credentials
+    r = red
     print("Successfully authenticated!")
     # Search for posts about AI Jesus
 
     print("Fetching 5 posts about AI Jesus...")
-    dog_posts = reddit.subreddit("all").search("AI Jesus", limit=5)    
+    posts = r.subreddit("all").search("AI Jesus", limit=5)    
 
     posts_data = []
-    for posts in dog_posts:
+    for post in posts:
         posts_data.append({
-        'title': posts.title,
-        'score': posts.score,
-        'id': posts.id,
-        'url': posts.url,
-        'num_comments': posts.num_comments,
-        'created': posts.created_utc,
-        'body': posts.selftext
+        'title': post.title,
+        'score': post.score,
+        'id': post.id,
+        'url': post.url,
+        'num_comments': post.num_comments,
+        'created': post.created_utc,
+        'body': post.selftext
 
         })
+
+    for i,posts in enumerate(posts_data, 1):
+        print(f"\nPost {i}:")
+        print(f"Title: {posts['title']}")
+        print(f"Score: {posts['score']}")
+        print(f"URL: {posts['url']}")
+        print(f"Number of Comments: {posts['num_comments']}")
+        print(f"Created: {posts['created']}")
+        print(f"Body: {posts['body']}")
         
-        return posts_data
+    
+    return posts_data
     
     # # Print post details
     # print("\n--- 5 Posts About AI Jesus ---")
@@ -55,12 +66,13 @@ def test_reddit_connection():
     # print("\nAPI test completed successfully!")
 
 if __name__ == "__main__":
-    posts = test_reddit_connection()
+    search1 = searchAIJesus(reddit)
     
     # Save to CSV
+    print("Saving posts to CSV...")
     with open('reddit_ai_jesus.csv', mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=posts[0].keys())
+        writer = csv.DictWriter(f, fieldnames=search1[0].keys())
         writer.writeheader()
-        writer.writerows(posts)
+        writer.writerows(search1)
 
 
