@@ -18,16 +18,10 @@ reddit = praw.Reddit(
         username="CryptographerOne6528",
     )
 
-def searchAIJesus(red):
-    print("Connecting to Reddit API...")
+def searchReddit(r, query):
     
-    # Initialize the Reddit instance with your credentials
-    r = red
-    print("Successfully authenticated!")
-    # Search for posts about AI Jesus
-
-    print("Fetching 5 posts about AI Jesus...")
-    posts = r.subreddit("all").search("AI Jesus", limit=5)    
+    print("Fetching posts about " + query + "...")
+    posts = r.subreddit("all").search([query], limit=50)    
 
     posts_data = []
     for post in posts:
@@ -42,37 +36,46 @@ def searchAIJesus(red):
 
         })
 
-    for i,posts in enumerate(posts_data, 1):
-        print(f"\nPost {i}:")
-        print(f"Title: {posts['title']}")
-        print(f"Score: {posts['score']}")
-        print(f"URL: {posts['url']}")
-        print(f"Number of Comments: {posts['num_comments']}")
-        print(f"Created: {posts['created']}")
-        print(f"Body: {posts['body']}")
+    # # tester to print out specific search results in console, can be removed
+    # if (query == "talk with AI Priest"):
+    #     print("\n--- 50 Posts About talk with Guru ---")
+    #     for i,posts in enumerate(posts_data, 1):
+    #         print(f"\nPost {i}:")
+    #         print(f"Title: {posts['title']}")
+    #         print(f"Score: {posts['score']}")
+    #         print(f"URL: {posts['url']}")
+    #         print(f"Number of Comments: {posts['num_comments']}")
+    #         print(f"Created: {posts['created']}")
+    #         print(f"Body: {posts['body']}")
         
     
     return posts_data
-    
-    # # Print post details
-    # print("\n--- 5 Posts About AI Jesus ---")
-    # for i, post in enumerate(dog_posts, 1):
-    #     print(f"\nPost {i}:")
-    #     print(f"Title: {post.title}")
-    #     print(f"Subreddit: r/{post.subreddit.display_name}")
-    #     print(f"Score: {post.score}")
-    #     print(f"URL: https://reddit.com{post.permalink}")
 
-    # print("\nAPI test completed successfully!")
 
 if __name__ == "__main__":
-    search1 = searchAIJesus(reddit)
+    #different search terms involving AI and religion
+    #could add searches or alter the search however you like
+    search1 = searchReddit(reddit, "AI Jesus")
+    search2 = searchReddit(reddit, "#ReligiousAI")
+    search3 = searchReddit(reddit, "Christian AI chatbot")
+    search4 = searchReddit(reddit, "TALKWITHAIRABBI")
+    search5 = searchReddit(reddit, "talk with AI Muhammed")
+    search6 = searchReddit(reddit, "AI Priest")
     
     # Save to CSV
     print("Saving posts to CSV...")
-    with open('reddit_ai_jesus.csv', mode='w', newline='', encoding='utf-8') as f:
+    with open('reddit_outputs.csv', mode='w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=search1[0].keys())
         writer.writeheader()
         writer.writerows(search1)
+        writer.writerows(search2)
+        writer.writerows(search3)
+        writer.writerows(search4)
+        writer.writerows(search5)
+        writer.writerows(search6)
+        
+    print("CSV saved successfully!")
+
+        
 
 
