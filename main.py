@@ -1,21 +1,19 @@
-#Meta App ID: 3814003358929786
-#import requests
-# ACCESS_TOKEN = "EAA2M0Nthk3oBO3PingP1UMZBLhgclWf9yBWl4iVcBPQnX3fcxQMWiTyFlEqGHsobCg3pVCOitQ5UYdRZAHtZBjqDZBSf3K91GFwA4H0wPd8KPtRxpb2IlCfvPsJYDbcTm7dUaEaZCOjndf5ztz2VkVamtRs1ZBUYHZBb2UHyyZBUN9I9O0hZAZBJ4cXEzcXU08bvbBVWt41pErm1Blsk5rJflVZB8dPN6Bmc0vfDzKy0OyS87eZBZAaPQ6AGkUNqczf5612i3RFCcmAZDZD"
 
-
-## Reddit API
+### Reddit post collector
+# This script collects posts from Reddit based on a search query, removes duplicates, and saves the results to a CSV file.
+import datetime 
 import praw
 import csv
-#import json
-#from pprint import pprint
+from textblob import TextBlob
+
 
 
 reddit = praw.Reddit(
-        client_id="gY3V4lnTMRgiXXD8P24arA",
-        client_secret="w6wPh1jbJhKl8V21DTxAnLtsHvs9Ew",
-        password="Pollution@3",
-        user_agent="script:dog_post_collector:v1.0 (by /u/CryptographerOne6528)",
-        username="CryptographerOne6528",
+       client_id="right below: personal use script...",
+       client_secret="yourSecretHere",
+       password="yourPasswordHere",
+       user_agent="script:dog_post_collector:v1.0 (by /u/username)",
+       username="yourUsernameHere",
     )
 
 def searchReddit(r, query):
@@ -69,6 +67,7 @@ if __name__ == "__main__":
         # make columns purpose clear
         post['body_text'] = post.pop('body')
     
+    ## Minor data engineering
     # Remove duplicates based on post id
     unique_posts = {}
     for post in all_posts:
@@ -79,6 +78,40 @@ if __name__ == "__main__":
     
     print("Collected " + str(len(all_posts)) + " total posts")
     print("After removing duplicates: " + str(len(unique_posts_list)) + " unique posts")
+    
+    for post in unique_posts_list:
+    # Convert Unix timestamp to readable date(got this from claude)
+        timestamp = datetime.datetime.fromtimestamp(post['created'])
+        post['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        
+    sorted_times = sorted(unique_posts_list, key=lambda x: x['created'])
+    
+    # Get earliest and latest dates
+    earliest_date = datetime.datetime.fromtimestamp(sorted_times[0]['created']).strftime('%Y-%m-%d')
+    latest_date = datetime.datetime.fromtimestamp(sorted_times[-1]['created']).strftime('%Y-%m-%d')
+    
+    print("Date range: " + str(earliest_date) + " to " + str(latest_date))
+    
+    # Sentiment analysis per post
+    positive_count = 0
+    negative_count = 0
+    neutral_count = 0
+    for post in unique_posts_list:
+        sentiment = TextBlob(post['title'] + " " + post['body_text']).sentiment.polarity
+        if sentiment > 0.2:
+            post['basic_sentiment'] = 'positive: ' + str(sentiment)
+            positive_count += 1
+        elif sentiment < -0.2:
+            post['basic_sentiment'] = 'negative: ' + str(sentiment)
+            negative_count += 1
+        else:
+            post['basic_sentiment'] = 'neutral: ' + str(sentiment)
+            neutral_count += 1
+    
+    print("Sentiment analysis complete")
+    print("Positive posts: " + str(positive_count))
+    print("Negative posts: " + str(negative_count))
+    print("Neutral posts: " + str(neutral_count))
     
     # Save to CSV
     print("Saving posts to CSV...")
@@ -91,7 +124,7 @@ if __name__ == "__main__":
         else:
             print("No posts found to save")
        
-       
+    # Combine all posts into one text file
     all_posts_text = ""
     for post in unique_posts_list:
         all_posts_text += post['title'] + " " + post['body_text'] + " "
@@ -101,6 +134,7 @@ if __name__ == "__main__":
         f.write(all_posts_text)
         print("Text file saved successfully")
     
+    # Calculate word frequencies
     word_freqencies = {}
     for word in all_posts_text.split():
         if word in word_freqencies:
@@ -121,6 +155,4 @@ if __name__ == "__main__":
             writer.writerow([word, frequency])
         print("Word frequencies saved successfully")
     
-
-
-
+    print("All tasks complete")
